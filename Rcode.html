@@ -1,0 +1,160 @@
+
+setwd("~/dataviz-fall-2013/wild-data")
+> data <- read.delim("county-data.txt", header = FALSE)
+> names(data) <- c("county_original", "guncount_original")
+head(data)
+class(data$county_original)
+data$county_original <- as.character(data$county_original)
+> data$guncount_original <- as.numeric(data$guncount_original)
+> class(data$county_original)
+class(data$guncount_original)
+split <- strsplit(data$county_orig, "\\(")
+
+get_first_item <- function(item){
+return(item[1])
+}
+
+get_second_item <- function(item){
+return(item[2])
+}
+
+data$county <- sapply(split, get_first_item)
+> data$state <- sapply(split, get_second_item)
+> data$state <- gsub(")", "", data$state)
+
+data$guncount_nocommas <- gsub(",", "", data$guncount_orig)
+
+data$guncount_clean <- as.numeric(data$guncount_nocommas)
+
+state_totals_data <- aggregate(data$guncount_clean, by = list(data$state), sum)
+
+names(state_totals_data) <- c("state", "guncount")
+
+install.packages("maptools")
+library(maptools)
+
+data$county <- sapply(split, get_first_item)
+data$state <- sapply(split, get_second_item)
+data$state <- gsub(")", "", data$state)
+data$guncount_nocommas <- gsub(",", "", data$guncount_orig)
+ 
+data$guncount_clean <- as.numeric(data$guncount_nocommas)
+ 
+state_totals_data <- aggregate(data$guncount_clean, by = list(data$state), sum)
+ 
+names(state_totals_data) <- c("state", "guncount")
+
+shapes <- readShapePoly("nyt_county/nyt_county.shp")
+plot(shapes)
+map_data <- data.frame(shapes)
+head(map_data)
+
+state_totals_data$state%in%map_data$state
+
+match(map_data$state, state_totals_data$state)
+
+data_order <-match(map_data$state, state_totals_data$state)
+
+map_data <- data.frame(shapes)
+
+head(map_data)
+
+shapes <- readShapePoly("nytlayout_state/nytlayout_state.shp")
+
+plot(shapes)
+map_data <- data.frame(shapes)
+head(map_data)
+
+map_data$state <- as.character(map_data$STATE_ABBR)
+head(map_data)
+
+class(map_data$state[1])
+
+state_totals_data$state%in%map_data$state
+
+match(map_data$state, state_totals_data$state)
+
+data_order <-match(map_data$state, state_totals_data$state)
+map_data$guncount <- state_totals_data$guncount[data_order]
+breaks <- c(0,50,100,200,300,500,1000,5000,10000,25000)
+buckets <- cut(map_data$guncount, breaks=breaks)
+numeric_buckets <- as.numeric(buckets)
+
+install.packages(Rcolorbrewer)
+library(Rcolorbrewer)
+
+buckets <- cut(map_data$guncount, breaks=breaks)
+shapes <- readShapePoly("nytlayout_state/nytlayout_state.shp")
+ 
+plot(shapes)
+map_data <- data.frame(shapes)
+head(map_data)
+
+map_data$state <- as.character(map_data$STATE_ABBR)
+head(map_data)
+
+class(map_data$state[1])
+
+state_totals_data$state%in%map_data$state
+
+match(map_data$state, state_totals_data$state)
+
+data_order <-match(map_data$state, state_totals_data$state)
+
+map_data$guncount <- state_totals_data$guncount[data_order]
+
+breaks <- c(0,50,100,200,300,500,1000,5000,10000,25000)
+
+buckets <- cut(map_data$guncount, breaks=breaks)
+numeric_buckets <- as.numeric(buckets)
+
+#match the data (make sure you put the map data first--but I don't know why)
+match_order <- match(map_data$STATE_ABBR, guns_state5$Group.1)
+map_data$guns <- guns_state3$x[match_order]
+ 
+#plotting
+map_breaks <- c(0, 50, 100, 250, 500, 750, 1000, 2500, 5000, 25000)
+buckets <- cut(map_data$guns, breaks=map_breaks)
+numeric_buckets <- as.numeric(buckets)
+colors <- brewer.pal(9, "YlOrRd")
+plot(shapes, col=colors[numeric_buckets])
+
+
+
+
+
+
+
+
+#load the shape files for New York into R
+shapes <- readShapePoly("nytlayout_state/nytlayout_state.shp")
+
+#plot the map now
+plot(shapes)
+
+map_data <- data.frame(shapes)
+
+head(map_data)
+
+map_data$state <- as.character(map_data$STATE_ABBR)
+
+head(map_data)
+
+class(map_data$state[1])
+
+state_totals_data$state%in%map_data$state
+
+match(map_data$state, state_totals_data$state)
+
+data_order <-match(map_data$state, state_totals_data$state)
+
+map_data$guncount <- state_totals_data$guncount[data_order]
+
+breaks <- c(0,50,100,200,300,500,1000,5000,10000,25000)
+
+buckets <- cut(map_data$guncount, breaks=breaks)
+
+numeric_buckets <- as.numeric(buckets)
+
+library("RColorBrewer")
+

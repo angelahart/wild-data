@@ -1,0 +1,49 @@
+setwd("~/dataviz-fall-2013/wild-data")
+> data <- read.delim("county-data.txt", header = FALSE)
+> names(data) <- c("county_original", "guncount_original")
+> split <- strsplit(data$county_orig, "\\(")
+Error in strsplit(data$county_orig, "\\(") : non-character argument
+> 
+> split <- strsplit(data$county_orig, \\(")
+Error: unexpected input in "split <- strsplit(data$county_orig, \"
+> 
+> split <- strsplit(data$county_orig, "\\(")
+Error in strsplit(data$county_orig, "\\(") : non-character argument
+> 
+> head(data)
+  county_original guncount_original
+1    ACCOMACK(VA)                 1
+2         ADA(ID)                 9
+3       ADAIR(KY)                 7
+4       ADAIR(MO)                 1
+5       ADAMS(CO)                15
+6       ADAMS(IL)                14
+> class(data$county_original)
+[1] "factor"
+> data$county_original <- as.character(data$county_original)
+> data$guncount_original <- as.numeric(data$guncount_original)
+> class(data$county_original)
+[1] "character"
+> class(data$guncount_original)
+[1] "numeric"
+> split <- strsplit(data$county_orig, "\\(")
+> 
+> get_first_item <- function(item){
++     return(item[1])
++ }
+> get_second_item <- function(item){
++     return(item[2])
++ }
+> data$county <- sapply(split, get_first_item)
+> data$state <- sapply(split, get_second_item)
+> data$state <- gsub(")", "", data$state)
+> 
+> data$guncount_nocommas <- gsub(",", "", data$guncount_orig)
+> 
+> data$guncount_clean <- as.numeric(data$guncount_nocommas)
+> 
+> state_totals_data <- aggregate(data$guncount_clean, by = list(data$state), sum)
+> 
+> names(state_totals_data) <- c("state", "guncount")
+> 
+> shapes <- readShapePoly("nytlayout_state.shp")
